@@ -1,0 +1,35 @@
+{
+  "metadata": {
+    "organization": "Enterprise AI & Cloud Infrastructure",
+    "version": "1.0"
+  },
+  "assets": [
+    {
+      "asset_id": "AST-001",
+      "name": "Customer LLM Inference API",
+      "type": "AI Model Endpoint",
+      "confidentiality_req": "HIGH",
+      "integrity_req": "HIGH",
+      "availability_req": "CRITICAL",
+      "exposure": "PUBLIC_INTERNET"
+    },
+    {
+      "asset_id": "AST-002",
+      "name": "Internal Employee HR Database",
+      "type": "Relational Database",
+      "confidentiality_req": "CRITICAL",
+      "integrity_req": "HIGH",
+      "availability_req": "MEDIUM",
+      "exposure": "INTERNAL_VPC"
+    },
+    {
+      "asset_id": "AST-003",
+      "name": "Unauthenticated AI Research Notebooks",
+      "type": "Jupyter Server",
+      "confidentiality_req": "MEDIUM",
+      "integrity_req": "LOW",
+      "availability_req": "LOW",
+      "exposure": "PUBLIC_INTERNET"
+    }
+  ]
+}
