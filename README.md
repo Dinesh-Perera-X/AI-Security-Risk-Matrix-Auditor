@@ -5,7 +5,7 @@ An automated quantitative risk assessment and asset inventory auditing engine bu
 ## 🚀 5-Day Development Roadmap
 
 - [x] **Day 1:** Asset Inventory Ingestion Engine & CLI Interface
-- [ ] **Day 2:** CIA Triad Impact & Likelihood Risk Scoring Matrix
+- [x] **Day 2:** CIA Triad Impact & Likelihood Risk Scoring Matrix
 - [ ] **Day 3:** Threat Modeling & AI-Specific Vulnerability Weighting
 - [ ] **Day 4:** Automated Mitigation & Remediation Recommendations Generator
 - [ ] **Day 5:** SIEM-compatible JSON Export & Interactive HTML Risk Dashboard

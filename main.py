@@ -4,6 +4,7 @@ from rich.panel import Panel
 from rich.table import Table
 
 from core.asset_parser import AssetParser
+from analyzers.risk_calculator import RiskCalculator
 
 console = Console()
 
@@ -22,32 +23,39 @@ def main():
     display_banner()
 
     assets = AssetParser.load_inventory(args.inventory)
+    scored_assets = RiskCalculator.evaluate_inventory(assets)
 
-    table = Table(title="[bold cyan]📋 Ingested Asset Inventory & CIA Requirements[/bold cyan]", border_style="cyan")
+    table = Table(title="[bold red]📊 Quantitative Risk Matrix & CIA Impact Score[/bold red]", border_style="red")
     table.add_column("Asset ID", justify="center", style="dim")
     table.add_column("Asset Name", style="white")
-    table.add_column("Type", style="magenta")
-    table.add_column("Confidentiality", justify="center", style="yellow")
-    table.add_column("Integrity", justify="center", style="yellow")
-    table.add_column("Availability", justify="center", style="yellow")
-    table.add_column("Exposure", justify="center", style="red")
+    table.add_column("Exposure", justify="center", style="yellow")
+    table.add_column("Risk Score", justify="center", style="cyan")
+    table.add_column("Risk Rating", justify="center")
 
-    if not assets:
-        table.add_row("-", "No assets found.", "-", "-", "-", "-", "-")
+    if not scored_assets:
+        table.add_row("-", "No assets found.", "-", "-", "-")
     else:
-        for a in assets:
+        for a in scored_assets:
+            rating = a["risk_rating"]
+            if rating == "CRITICAL":
+                rating_str = "[bold red]CRITICAL[/bold red]"
+            elif rating == "HIGH":
+                rating_str = "[bold yellow]HIGH[/bold yellow]"
+            elif rating == "MEDIUM":
+                rating_str = "[bold blue]MEDIUM[/bold blue]"
+            else:
+                rating_str = "[bold green]LOW[/bold green]"
+
             table.add_row(
                 a["asset_id"],
                 a["name"],
-                a["type"],
-                a["confidentiality_req"],
-                a["integrity_req"],
-                a["availability_req"],
-                a["exposure"]
+                a["exposure"],
+                f"{a['risk_score']}/100",
+                rating_str
             )
 
     console.print(table)
-    console.print(f"\n[bold green]✔ Day 1 Complete:[/bold green] Ingested [bold cyan]{len(assets)}[/bold cyan] organizational assets.")
+    console.print(f"\n[bold green]✔ Day 2 Complete:[/bold green] Evaluated quantitative risk scores for [bold cyan]{len(scored_assets)}[/bold cyan] assets.")
 
 if __name__ == "__main__":
     main()
