@@ -5,6 +5,7 @@ from rich.table import Table
 
 from core.asset_parser import AssetParser
 from analyzers.risk_calculator import RiskCalculator
+from analyzers.threat_model import ThreatModeler
 
 console = Console()
 
@@ -24,38 +25,29 @@ def main():
 
     assets = AssetParser.load_inventory(args.inventory)
     scored_assets = RiskCalculator.evaluate_inventory(assets)
+    threat_profiled_assets = ThreatModeler.evaluate_threats(scored_assets)
 
-    table = Table(title="[bold red]📊 Quantitative Risk Matrix & CIA Impact Score[/bold red]", border_style="red")
+    table = Table(title="[bold cyan]🔍 Day 3: Threat Modeling & AI Vulnerability Mapping[/bold cyan]", border_style="cyan")
     table.add_column("Asset ID", justify="center", style="dim")
     table.add_column("Asset Name", style="white")
-    table.add_column("Exposure", justify="center", style="yellow")
+    table.add_column("Primary Threat Vector", style="yellow")
+    table.add_column("OWASP / LLM Top 10", style="magenta")
     table.add_column("Risk Score", justify="center", style="cyan")
-    table.add_column("Risk Rating", justify="center")
 
-    if not scored_assets:
+    if not threat_profiled_assets:
         table.add_row("-", "No assets found.", "-", "-", "-")
     else:
-        for a in scored_assets:
-            rating = a["risk_rating"]
-            if rating == "CRITICAL":
-                rating_str = "[bold red]CRITICAL[/bold red]"
-            elif rating == "HIGH":
-                rating_str = "[bold yellow]HIGH[/bold yellow]"
-            elif rating == "MEDIUM":
-                rating_str = "[bold blue]MEDIUM[/bold blue]"
-            else:
-                rating_str = "[bold green]LOW[/bold green]"
-
+        for a in threat_profiled_assets:
             table.add_row(
                 a["asset_id"],
                 a["name"],
-                a["exposure"],
-                f"{a['risk_score']}/100",
-                rating_str
+                a["primary_threat"],
+                a["owasp_mapping"],
+                f"{a['risk_score']}/100"
             )
 
     console.print(table)
-    console.print(f"\n[bold green]✔ Day 2 Complete:[/bold green] Evaluated quantitative risk scores for [bold cyan]{len(scored_assets)}[/bold cyan] assets.")
+    console.print(f"\n[bold green]✔ Day 3 Complete:[/bold green] Profiled threat models for [bold cyan]{len(threat_profiled_assets)}[/bold cyan] assets.")
 
 if __name__ == "__main__":
     main()
