@@ -7,6 +7,7 @@ from core.asset_parser import AssetParser
 from analyzers.risk_calculator import RiskCalculator
 from analyzers.threat_model import ThreatModeler
 from generators.remediation import RemediationGenerator
+from reports.reporter import Reporter
 
 console = Console()
 
@@ -29,26 +30,25 @@ def main():
     threat_profiled_assets = ThreatModeler.evaluate_threats(scored_assets)
     remediated_assets = RemediationGenerator.evaluate_remediations(threat_profiled_assets)
 
-    table = Table(title="[bold green]🛠️ Day 4: Automated Remediation & Hardening Controls[/bold green]", border_style="green")
+    # Generate Reports
+    siem_path = Reporter.export_siem_json(remediated_assets)
+    html_path = Reporter.export_html_dashboard(remediated_assets)
+
+    table = Table(title="[bold magenta]🚀 Day 5: Complete Risk Audit & Report Exporter[/bold magenta]", border_style="magenta")
     table.add_column("Asset ID", justify="center", style="dim")
     table.add_column("Asset Name", style="white")
-    table.add_column("Primary Threat", style="yellow")
-    table.add_column("Recommended Security Controls", style="cyan")
+    table.add_column("Risk Score", justify="center", style="cyan")
+    table.add_column("Rating", justify="center")
 
-    if not remediated_assets:
-        table.add_row("-", "No assets found.", "-", "-")
-    else:
-        for a in remediated_assets:
-            controls_str = "\n".join([f"• {c}" for c in a["remediation_steps"]])
-            table.add_row(
-                a["asset_id"],
-                a["name"],
-                a["primary_threat"],
-                controls_str
-            )
+    for a in remediated_assets:
+        rating = a["risk_rating"]
+        rating_str = f"[bold red]{rating}[/bold red]" if rating in ["CRITICAL", "HIGH"] else f"[bold green]{rating}[/bold green]"
+        table.add_row(a["asset_id"], a["name"], f"{a['risk_score']}/100", rating_str)
 
     console.print(table)
-    console.print(f"\n[bold green]✔ Day 4 Complete:[/bold green] Generated hardening controls for [bold cyan]{len(remediated_assets)}[/bold cyan] assets.")
+    console.print(f"\n[bold green]✔ Day 5 Complete:[/bold green] Successfully generated reports:")
+    console.print(f"  • SIEM JSON Export: [cyan]{siem_path}[/cyan]")
+    console.print(f"  • HTML Executive Dashboard: [cyan]{html_path}[/cyan]")
 
 if __name__ == "__main__":
     main()
